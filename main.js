@@ -1,3 +1,24 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggle = document.getElementById('checkbox');
+  
+  // Load saved theme from localStorage
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    themeToggle.checked = true;
+  }
+
+  themeToggle.addEventListener('change', () => {
+    if (themeToggle.checked) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  });
+});
+
 function generateLottoNumbers() {
   const numbers = new Set();
   while (numbers.size < 7) {
@@ -31,7 +52,7 @@ function createBall(number) {
   ball.className = 'lotto-ball';
   ball.textContent = number;
   const color = getBallColor(number);
-  ball.style.background = `radial-gradient(circle at 20px 20px, ${color}, #333)`;
+  ball.style.backgroundColor = color; // Changed to solid color
   return ball;
 }
 
@@ -48,3 +69,4 @@ function getBallColor(number) {
     return '#b0d840'; // Green
   }
 }
+
