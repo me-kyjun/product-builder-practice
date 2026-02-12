@@ -16,24 +16,15 @@
     <a href="index.html" style="text-decoration: none; color: var(--text-color); font-size: 0.9em; display: block; margin-bottom: 20px;">← 뒤로 가기</a>
     <h1>동물상 테스트</h1>
     
-    <div class="mode-switch">
-      <label>
-        <input type="radio" name="mode" value="camera" checked onchange="switchMode('camera')"> 카메라
-      </label>
-      <label style="margin-left: 20px;">
-        <input type="radio" name="mode" value="file" onchange="switchMode('file')"> 사진 파일
-      </label>
-    </div>
-
-    <div id="camera-section" class="test-section">
-      <button type="button" id="start-btn" onclick="initAnimalTest()">카메라 시작</button>
-      <div id="webcam-container"></div>
-    </div>
-
-    <div id="file-section" class="test-section" style="display: none;">
-      <input type="file" id="image-upload" accept="image/*" onchange="handleFileUpload(event)" style="margin: 20px 0;">
+    <div id="file-section" class="test-section">
+      <div class="upload-container" id="upload-area" onclick="document.getElementById('image-upload').click()">
+        <div class="upload-icon">📸</div>
+        <p>클릭하거나 사진을 이곳에 끌어다 놓으세요</p>
+        <input type="file" id="image-upload" accept="image/*" onchange="handleFileUpload(event)" style="display: none;">
+      </div>
+      
       <div id="image-preview-container">
-        <img id="image-preview" src="#" alt="미리보기" style="display: none; width: 200px; height: 200px; object-fit: cover; margin: 0 auto 15px; border-radius: 10px;">
+        <img id="image-preview" src="#" alt="미리보기" style="display: none; width: 250px; height: 250px; object-fit: cover; margin: 20px auto; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
       </div>
     </div>
 
@@ -41,31 +32,80 @@
   </div>
 
   <style>
-    .mode-switch {
-      margin: 20px 0;
-      color: var(--text-color);
-      font-size: 1.1em;
-    }
     .test-section {
       min-height: 250px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-    }
-    #label-container {
       margin-top: 20px;
+    }
+    
+    .upload-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 40px 20px;
+      border: 2px dashed #ccc;
+      border-radius: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: rgba(0,0,0,0.02);
+    }
+    
+    .upload-container:hover {
+      border-color: var(--button-background-color);
+      background: rgba(92, 184, 92, 0.05);
+    }
+    
+    .dark-mode .upload-container {
+      background: rgba(255,255,255,0.05);
+      border-color: #555;
+    }
+    
+    .dark-mode .upload-container:hover {
+      border-color: var(--button-background-color);
+      background: rgba(76, 175, 80, 0.1);
+    }
+    
+    .upload-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+    
+    .upload-container p {
+      margin: 0;
+      color: var(--text-color);
+      font-size: 1.1em;
+    }
+
+    #label-container {
+      margin-top: 30px;
       font-size: 1.2em;
       color: var(--text-color);
       text-align: center;
       width: 100%;
+      max-width: 400px;
     }
+    
     #label-container div {
-      margin-bottom: 8px;
-      padding: 10px;
+      margin-bottom: 10px;
+      padding: 12px;
       background: rgba(0,0,0,0.05);
-      border-radius: 8px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.2s;
     }
+    
+    #label-container div:first-child {
+      background: var(--button-background-color);
+      color: white;
+      font-weight: bold;
+      transform: scale(1.05);
+    }
+
     .dark-mode #label-container div {
       background: rgba(255,255,255,0.1);
     }
@@ -73,8 +113,7 @@
 
   <script type="text/javascript">
     const ANIMAL_URL = "https://teachablemachine.withgoogle.com/models/NESzUcrac/";
-    let model, webcam, labelContainer, maxPredictions;
-    let isCameraRunning = false;
+    let model, labelContainer, maxPredictions;
 
     async function loadModel() {
       if (!model) {
@@ -85,66 +124,38 @@
       }
     }
 
-    async function stopWebcam() {
-      if (webcam) {
-        await webcam.stop();
-        const webcamContainer = document.getElementById("webcam-container");
-        if (webcamContainer.contains(webcam.canvas)) {
-          webcamContainer.removeChild(webcam.canvas);
-        }
-        webcam = null;
-      }
-      isCameraRunning = false;
-      const startBtn = document.getElementById('start-btn');
-      startBtn.style.display = 'block';
-      startBtn.disabled = false;
-      startBtn.textContent = "카메라 시작";
+    // Drag and drop handling
+    const uploadArea = document.getElementById('upload-area');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
 
-    async function switchMode(mode) {
-      await stopWebcam();
-      if (mode === 'camera') {
-        document.getElementById('camera-section').style.display = 'flex';
-        document.getElementById('file-section').style.display = 'none';
-      } else {
-        document.getElementById('camera-section').style.display = 'none';
-        document.getElementById('file-section').style.display = 'flex';
-      }
-      document.getElementById('label-container').innerHTML = '';
-      const img = document.getElementById('image-preview');
-      img.style.display = 'none';
-      img.src = '#';
-    }
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => {
+        uploadArea.style.borderColor = 'var(--button-background-color)';
+        uploadArea.style.background = 'rgba(92, 184, 92, 0.1)';
+      }, false);
+    });
 
-    async function initAnimalTest() {
-      const startBtn = document.getElementById('start-btn');
-      startBtn.disabled = true;
-      startBtn.textContent = "로딩 중...";
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => {
+        uploadArea.style.borderColor = '#ccc';
+        uploadArea.style.background = 'rgba(0,0,0,0.02)';
+      }, false);
+    });
 
-      await loadModel();
+    uploadArea.addEventListener('drop', handleDrop, false);
 
-      const flip = true;
-      webcam = new tmImage.Webcam(200, 200, flip);
-      await webcam.setup();
-      await webcam.play();
-      isCameraRunning = true;
-      window.requestAnimationFrame(loop);
-
-      document.getElementById("webcam-container").appendChild(webcam.canvas);
-      labelContainer = document.getElementById("label-container");
-      labelContainer.innerHTML = '';
-      for (let i = 0; i < maxPredictions; i++) {
-        labelContainer.appendChild(document.createElement("div"));
-      }
-      startBtn.style.display = 'none';
-    }
-
-    async function loop() {
-      if (isCameraRunning && webcam && webcam.canvas) {
-        webcam.update();
-        await predict(webcam.canvas);
-        window.requestAnimationFrame(loop);
-      }
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFileUpload({ target: { files: files } });
     }
 
     async function handleFileUpload(event) {
@@ -161,10 +172,7 @@
         
         // Ensure results container is ready
         labelContainer = document.getElementById("label-container");
-        labelContainer.innerHTML = '';
-        for (let i = 0; i < maxPredictions; i++) {
-          labelContainer.appendChild(document.createElement("div"));
-        }
+        labelContainer.innerHTML = '분석 중...';
         
         // Wait for image to load to predict
         img.onload = async function() {
@@ -176,19 +184,22 @@
 
     async function predict(imageElement) {
       const prediction = await model.predict(imageElement);
-      labelContainer = document.getElementById("label-container");
+      prediction.sort((a, b) => b.probability - a.probability);
       
-      // If label container is empty (e.g. after mode switch or first file load), populate it
-      if (labelContainer.childNodes.length === 0) {
-        for (let i = 0; i < maxPredictions; i++) {
-          labelContainer.appendChild(document.createElement("div"));
-        }
-      }
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = '';
 
       for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction =
-          prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(0) + "%";
-        labelContainer.childNodes[i].innerHTML = classPrediction;
+        const div = document.createElement("div");
+        const className = document.createElement("span");
+        className.textContent = prediction[i].className;
+        
+        const probability = document.createElement("span");
+        probability.textContent = (prediction[i].probability * 100).toFixed(0) + "%";
+        
+        div.appendChild(className);
+        div.appendChild(probability);
+        labelContainer.appendChild(div);
       }
     }
     
