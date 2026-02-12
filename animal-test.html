@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Animal Face Test</title>
+  <title>인공지능 동물상 테스트 - 나랑 닮은 동물 찾기</title>
+  <meta name="description" content="인공지능(AI)이 분석하는 나의 동물상 테스트! 강아지, 고양이, 토끼 등 어떤 동물과 닮았는지 확인해보세요.">
   <meta name="google-adsense-account" content="ca-pub-9457106648027800">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9457106648027800"
      crossorigin="anonymous"></script>
@@ -12,14 +13,26 @@
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
-  <div class="lotto-container">
-    <a href="index.html" style="text-decoration: none; color: var(--text-color); font-size: 0.9em; display: block; margin-bottom: 20px;">← 뒤로 가기</a>
-    <h1>동물상 테스트</h1>
+  <header class="site-header">
+    <nav class="nav-container">
+      <a href="index.html" class="nav-logo">🍀 Lotto & AI</a>
+      <ul class="nav-menu">
+        <li><a href="index.html">로또 번호 생성</a></li>
+        <li><a href="animal-test.html" class="active">동물상 테스트</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="lotto-container">
+    <section class="intro-section">
+      <h1>인공지능 동물상 테스트</h1>
+      <p>수만 장의 사진 데이터로 학습된 AI가 당신의 얼굴을 분석하여 가장 닮은 동물을 찾아드립니다. 로그인 없이 간편하게 테스트해보세요!</p>
+    </section>
     
     <div id="file-section" class="test-section">
       <div class="upload-container" id="upload-area" onclick="document.getElementById('image-upload').click()">
         <div class="upload-icon">📸</div>
-        <p>클릭하거나 사진을 이곳에 끌어다 놓으세요</p>
+        <p>사진을 선택하거나 이곳에 끌어다 놓으세요</p>
         <input type="file" id="image-upload" accept="image/*" onchange="handleFileUpload(event)" style="display: none;">
       </div>
       
@@ -29,18 +42,143 @@
     </div>
 
     <div id="label-container"></div>
-  </div>
+
+    <section class="guide-section">
+      <h3>테스트 가이드</h3>
+      <ul>
+        <li>정면 사진을 사용하면 더 정확한 결과를 얻을 수 있습니다.</li>
+        <li>사진은 서버에 저장되지 않으며, 브라우저 내에서만 분석됩니다.</li>
+        <li>결과는 재미로만 확인해주세요!</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; 2026 Lotto & AI Project. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#privacy">개인정보처리방침</a>
+        <a href="#about">사이트 소개</a>
+        <a href="mailto:kyjun2470418@gmail.com">문의하기</a>
+      </div>
+    </div>
+  </footer>
 
   <style>
+    /* Header & Nav */
+    .site-header {
+      background: var(--container-background-color);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 15px 0;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+    }
+    .nav-container {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+    .nav-logo {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--button-background-color);
+      text-decoration: none;
+    }
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-menu a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .nav-menu a.active {
+      color: var(--button-background-color);
+      border-bottom: 2px solid var(--button-background-color);
+    }
+
+    body {
+      padding-top: 80px; /* Header space */
+    }
+
+    .intro-section {
+      margin-bottom: 30px;
+    }
+    .intro-section p {
+      color: #666;
+      line-height: 1.6;
+    }
+    .dark-mode .intro-section p {
+      color: #ccc;
+    }
+
+    .guide-section {
+      margin-top: 40px;
+      text-align: left;
+      padding: 20px;
+      background: rgba(0,0,0,0.02);
+      border-radius: 10px;
+    }
+    .dark-mode .guide-section {
+      background: rgba(255,255,255,0.05);
+    }
+    .guide-section h3 {
+      margin-top: 0;
+    }
+    .guide-section ul {
+      padding-left: 20px;
+      color: #666;
+    }
+    .dark-mode .guide-section ul {
+      color: #ccc;
+    }
+
+    /* Footer */
+    .site-footer {
+      margin-top: 50px;
+      padding: 30px 20px;
+      background: var(--container-background-color);
+      border-top: 1px solid #eee;
+      width: 100%;
+    }
+    .dark-mode .site-footer {
+      border-top-color: #444;
+    }
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .footer-links {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .footer-links a {
+      color: #888;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+
+    /* Existing test styles */
     .test-section {
       min-height: 250px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin-top: 20px;
     }
-    
     .upload-container {
       width: 100%;
       max-width: 400px;
@@ -52,33 +190,15 @@
       transition: all 0.3s;
       background: rgba(0,0,0,0.02);
     }
-    
     .upload-container:hover {
       border-color: var(--button-background-color);
       background: rgba(92, 184, 92, 0.05);
     }
-    
     .dark-mode .upload-container {
       background: rgba(255,255,255,0.05);
       border-color: #555;
     }
-    
-    .dark-mode .upload-container:hover {
-      border-color: var(--button-background-color);
-      background: rgba(76, 175, 80, 0.1);
-    }
-    
-    .upload-icon {
-      font-size: 3em;
-      margin-bottom: 10px;
-    }
-    
-    .upload-container p {
-      margin: 0;
-      color: var(--text-color);
-      font-size: 1.1em;
-    }
-
+    .upload-icon { font-size: 3em; margin-bottom: 10px; }
     #label-container {
       margin-top: 30px;
       font-size: 1.2em;
@@ -87,7 +207,6 @@
       width: 100%;
       max-width: 400px;
     }
-    
     #label-container div {
       margin-bottom: 10px;
       padding: 12px;
@@ -96,18 +215,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: transform 0.2s;
     }
-    
     #label-container div:first-child {
       background: var(--button-background-color);
       color: white;
       font-weight: bold;
       transform: scale(1.05);
-    }
-
-    .dark-mode #label-container div {
-      background: rgba(255,255,255,0.1);
     }
   </style>
 
@@ -115,47 +228,20 @@
     const ANIMAL_URL = "https://teachablemachine.withgoogle.com/models/NESzUcrac/";
     let model, labelContainer, maxPredictions;
 
+    // Load model as soon as possible
+    loadModel();
+
     async function loadModel() {
       if (!model) {
-        const modelURL = ANIMAL_URL + "model.json";
-        const metadataURL = ANIMAL_URL + "metadata.json";
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
+        try {
+          const modelURL = ANIMAL_URL + "model.json";
+          const metadataURL = ANIMAL_URL + "metadata.json";
+          model = await tmImage.load(modelURL, metadataURL);
+          maxPredictions = model.getTotalClasses();
+        } catch (e) {
+          console.error("모델 로딩 실패", e);
+        }
       }
-    }
-
-    // Drag and drop handling
-    const uploadArea = document.getElementById('upload-area');
-    
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      uploadArea.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-      uploadArea.addEventListener(eventName, () => {
-        uploadArea.style.borderColor = 'var(--button-background-color)';
-        uploadArea.style.background = 'rgba(92, 184, 92, 0.1)';
-      }, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      uploadArea.addEventListener(eventName, () => {
-        uploadArea.style.borderColor = '#ccc';
-        uploadArea.style.background = 'rgba(0,0,0,0.02)';
-      }, false);
-    });
-
-    uploadArea.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      handleFileUpload({ target: { files: files } });
     }
 
     async function handleFileUpload(event) {
@@ -163,26 +249,34 @@
       if (!file) return;
 
       const reader = new FileReader();
+      
+      // Fixed: Load model and set onload BEFORE setting src to prevent race conditions
       reader.onload = async function(e) {
         const img = document.getElementById('image-preview');
-        img.src = e.target.result;
-        img.style.display = 'block';
         
-        await loadModel();
-        
-        // Ensure results container is ready
-        labelContainer = document.getElementById("label-container");
-        labelContainer.innerHTML = '분석 중...';
-        
-        // Wait for image to load to predict
+        // Ensure model is loaded
+        if (!model) {
+          document.getElementById("label-container").innerHTML = '인공지능 모델을 불러오는 중입니다...';
+          await loadModel();
+        }
+
+        // Set up the image onload handler first
         img.onload = async function() {
           await predict(img);
         };
+
+        img.src = e.target.result;
+        img.style.display = 'block';
+        
+        document.getElementById("label-container").innerHTML = '분석 중...';
       };
+      
       reader.readAsDataURL(file);
     }
 
     async function predict(imageElement) {
+      if (!model) return;
+      
       const prediction = await model.predict(imageElement);
       prediction.sort((a, b) => b.probability - a.probability);
       
@@ -202,8 +296,20 @@
         labelContainer.appendChild(div);
       }
     }
-    
-    // Check for dark mode
+
+    // Drag and drop logic
+    const uploadArea = document.getElementById('upload-area');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(n => uploadArea.addEventListener(n, e => {
+      e.preventDefault(); e.stopPropagation();
+    }));
+    ['dragenter', 'dragover'].forEach(n => uploadArea.addEventListener(n, () => {
+      uploadArea.style.borderColor = 'var(--button-background-color)';
+    }));
+    ['dragleave', 'drop'].forEach(n => uploadArea.addEventListener(n, () => {
+      uploadArea.style.borderColor = '#ccc';
+    }));
+    uploadArea.addEventListener('drop', e => handleFileUpload({ target: { files: e.dataTransfer.files } }));
+
     if (localStorage.getItem('theme') === 'dark') {
       document.body.classList.add('dark-mode');
     }
