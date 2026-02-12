@@ -112,7 +112,7 @@ button:hover {
   font-family: inherit;
 }
 
-.widget-toggle {
+.widget-toggle, .widget-link {
   background-color: var(--button-background-color);
   color: white;
   border: none;
@@ -122,9 +122,11 @@ button:hover {
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   font-weight: bold;
   transition: transform 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.widget-toggle:hover {
+.widget-toggle:hover, .widget-link:hover {
   transform: scale(1.05);
 }
 

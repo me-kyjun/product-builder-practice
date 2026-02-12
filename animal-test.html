@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animal Face Test</title>
+  <link href='style.css' rel='stylesheet'>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+  <div class="lotto-container">
+    <a href="index.html" style="text-decoration: none; color: var(--text-color); font-size: 0.9em; display: block; margin-bottom: 20px;">← 뒤로 가기</a>
+    <h1>동물상 테스트</h1>
+    
+    <div class="mode-switch">
+      <label>
+        <input type="radio" name="mode" value="camera" checked onchange="switchMode('camera')"> 카메라
+      </label>
+      <label style="margin-left: 20px;">
+        <input type="radio" name="mode" value="file" onchange="switchMode('file')"> 사진 파일
+      </label>
+    </div>
+
+    <div id="camera-section" class="test-section">
+      <button type="button" id="start-btn" onclick="initAnimalTest()">카메라 시작</button>
+      <div id="webcam-container"></div>
+    </div>
+
+    <div id="file-section" class="test-section" style="display: none;">
+      <input type="file" id="image-upload" accept="image/*" onchange="handleFileUpload(event)" style="margin: 20px 0;">
+      <div id="image-preview-container">
+        <img id="image-preview" src="#" alt="미리보기" style="display: none; width: 200px; height: 200px; object-fit: cover; margin: 0 auto 15px; border-radius: 10px;">
+      </div>
+    </div>
+
+    <div id="label-container"></div>
+  </div>
+
+  <style>
+    .mode-switch {
+      margin: 20px 0;
+      color: var(--text-color);
+      font-size: 1.1em;
+    }
+    .test-section {
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #label-container {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: var(--text-color);
+      text-align: center;
+    }
+    #label-container div {
+      margin-bottom: 8px;
+      padding: 10px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 8px;
+    }
+    .dark-mode #label-container div {
+      background: rgba(255,255,255,0.1);
+    }
+  </style>
+
+  <script type="text/javascript">
+    const ANIMAL_URL = "https://teachablemachine.withgoogle.com/models/NESzUcrac/";
+    let model, webcam, labelContainer, maxPredictions;
+
+    async function loadModel() {
+      if (!model) {
+        const modelURL = ANIMAL_URL + "model.json";
+        const metadataURL = ANIMAL_URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+      }
+    }
+
+    function switchMode(mode) {
+      if (mode === 'camera') {
+        document.getElementById('camera-section').style.display = 'flex';
+        document.getElementById('file-section').style.display = 'none';
+        if (webcam) webcam.stop();
+      } else {
+        document.getElementById('camera-section').style.display = 'none';
+        document.getElementById('file-section').style.display = 'flex';
+        if (webcam) webcam.stop();
+      }
+      document.getElementById('label-container').innerHTML = '';
+    }
+
+    async function initAnimalTest() {
+      const startBtn = document.getElementById('start-btn');
+      startBtn.disabled = true;
+      startBtn.textContent = "로딩 중...";
+
+      await loadModel();
+
+      const flip = true;
+      webcam = new tmImage.Webcam(200, 200, flip);
+      await webcam.setup();
+      await webcam.play();
+      window.requestAnimationFrame(loop);
+
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = '';
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
+      startBtn.style.display = 'none';
+    }
+
+    async function loop() {
+      if (webcam && webcam.canvas) {
+        webcam.update();
+        await predict(webcam.canvas);
+        window.requestAnimationFrame(loop);
+      }
+    }
+
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const img = document.getElementById('image-preview');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        
+        await loadModel();
+        
+        // Wait for image to load to predict
+        img.onload = async function() {
+          await predict(img);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function predict(imageElement) {
+      const prediction = await model.predict(imageElement);
+      labelContainer = document.getElementById("label-container");
+      if (labelContainer.childNodes.length === 0) {
+        for (let i = 0; i < maxPredictions; i++) {
+          labelContainer.appendChild(document.createElement("div"));
+        }
+      }
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction =
+          prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(0) + "%";
+        labelContainer.childNodes[i].innerHTML = classPrediction;
+      }
+    }
+    
+    // Check for dark mode
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+  </script>
+</body>
+</html>
