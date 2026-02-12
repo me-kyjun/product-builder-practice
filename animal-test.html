@@ -71,7 +71,7 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       padding: 15px 0;
       width: 100%;
-      position: fixed;
+      position: sticky;
       top: 0;
       z-index: 1000;
     }
@@ -107,21 +107,7 @@
       border-bottom: 2px solid var(--button-background-color);
     }
 
-    body {
-      padding-top: 80px; /* Header space */
-    }
-
-    .intro-section {
-      margin-bottom: 30px;
-    }
-    .intro-section p {
-      color: #666;
-      line-height: 1.6;
-    }
-    .dark-mode .intro-section p {
-      color: #ccc;
-    }
-
+    .intro-section { margin-bottom: 30px; }
     .guide-section {
       margin-top: 40px;
       text-align: left;
@@ -129,47 +115,19 @@
       background: rgba(0,0,0,0.02);
       border-radius: 10px;
     }
-    .dark-mode .guide-section {
-      background: rgba(255,255,255,0.05);
-    }
-    .guide-section h3 {
-      margin-top: 0;
-    }
-    .guide-section ul {
-      padding-left: 20px;
-      color: #666;
-    }
-    .dark-mode .guide-section ul {
-      color: #ccc;
-    }
+    .dark-mode .guide-section { background: rgba(255,255,255,0.05); }
 
-    /* Footer */
     .site-footer {
-      margin-top: 50px;
+      margin-top: auto;
       padding: 30px 20px;
       background: var(--container-background-color);
       border-top: 1px solid #eee;
       width: 100%;
     }
-    .dark-mode .site-footer {
-      border-top-color: #444;
-    }
-    .footer-content {
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .footer-links {
-      margin-top: 15px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-    .footer-links a {
-      color: #888;
-      text-decoration: none;
-      font-size: 0.9em;
-    }
+    .dark-mode .site-footer { border-top-color: #444; }
+    .footer-content { max-width: 800px; margin: 0 auto; text-align: center; }
+    .footer-links { margin-top: 15px; display: flex; justify-content: center; gap: 20px; }
+    .footer-links a { color: #888; text-decoration: none; font-size: 0.9em; }
 
     /* Existing test styles */
     .test-section {
@@ -250,17 +208,14 @@
 
       const reader = new FileReader();
       
-      // Fixed: Load model and set onload BEFORE setting src to prevent race conditions
       reader.onload = async function(e) {
         const img = document.getElementById('image-preview');
         
-        // Ensure model is loaded
         if (!model) {
           document.getElementById("label-container").innerHTML = '인공지능 모델을 불러오는 중입니다...';
           await loadModel();
         }
 
-        // Set up the image onload handler first
         img.onload = async function() {
           await predict(img);
         };
