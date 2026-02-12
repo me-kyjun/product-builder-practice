@@ -326,3 +326,22 @@ input:checked + .slider:before {
   margin-top: 30px;
 }
 
+/* AdSense Styles */
+.ad-container {
+  margin: 20px 0;
+  text-align: center;
+  min-height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ad-label {
+  display: block;
+  font-size: 10px;
+  color: #999;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
