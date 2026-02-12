@@ -111,23 +111,23 @@
     .guide-section {
       margin-top: 40px;
       text-align: left;
-      padding: 20px;
+      padding: 25px;
       background: rgba(0,0,0,0.02);
-      border-radius: 10px;
+      border-radius: 16px;
     }
     .dark-mode .guide-section { background: rgba(255,255,255,0.05); }
 
     .site-footer {
       margin-top: auto;
-      padding: 30px 20px;
+      padding: 40px 20px;
       background: var(--container-background-color);
-      border-top: 1px solid #eee;
+      border-top: 1px solid rgba(0,0,0,0.05);
       width: 100%;
     }
-    .dark-mode .site-footer { border-top-color: #444; }
+    .dark-mode .site-footer { border-top-color: rgba(255,255,255,0.05); }
     .footer-content { max-width: 800px; margin: 0 auto; text-align: center; }
     .footer-links { margin-top: 15px; display: flex; justify-content: center; gap: 20px; }
-    .footer-links a { color: #888; text-decoration: none; font-size: 0.9em; }
+    .footer-links a { color: var(--text-color); opacity: 0.6; text-decoration: none; font-size: 0.9em; }
 
     /* Existing test styles */
     .test-section {
@@ -157,29 +157,6 @@
       border-color: #555;
     }
     .upload-icon { font-size: 3em; margin-bottom: 10px; }
-    #label-container {
-      margin-top: 30px;
-      font-size: 1.2em;
-      color: var(--text-color);
-      text-align: center;
-      width: 100%;
-      max-width: 400px;
-    }
-    #label-container div {
-      margin-bottom: 10px;
-      padding: 12px;
-      background: rgba(0,0,0,0.05);
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    #label-container div:first-child {
-      background: var(--button-background-color);
-      color: white;
-      font-weight: bold;
-      transform: scale(1.05);
-    }
   </style>
 
   <script type="text/javascript">
