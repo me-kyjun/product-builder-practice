@@ -5,8 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lotto Number Generator</title>
   <link href='style.css' rel='stylesheet'>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
+  <div class="animal-test-widget">
+    <button type="button" class="widget-toggle" onclick="toggleAnimalWidget()">🐶 동물상 테스트</button>
+    <div id="animal-container" class="hidden">
+      <div class="widget-header">
+        <span>동물상 테스트</span>
+        <button onclick="toggleAnimalWidget()">×</button>
+      </div>
+      <div class="widget-content">
+        <button type="button" id="start-btn" onclick="initAnimalTest()">카메라 시작</button>
+        <div id="webcam-container"></div>
+        <div id="label-container"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="lotto-container">
     <h1>Lotto Number Generator</h1>
     <div class="theme-switch-wrapper">

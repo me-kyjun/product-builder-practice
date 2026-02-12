@@ -70,3 +70,54 @@ function getBallColor(number) {
   }
 }
 
+// Animal Face Test Logic
+const ANIMAL_URL = "https://teachablemachine.withgoogle.com/models/NESzUcrac/";
+let animalModel, webcam, labelContainer, maxPredictions;
+
+function toggleAnimalWidget() {
+  const container = document.getElementById('animal-container');
+  container.classList.toggle('hidden');
+}
+
+async function initAnimalTest() {
+  const startBtn = document.getElementById('start-btn');
+  startBtn.disabled = true;
+  startBtn.textContent = "모델 로딩 중...";
+
+  const modelURL = ANIMAL_URL + "model.json";
+  const metadataURL = ANIMAL_URL + "metadata.json";
+
+  animalModel = await tmImage.load(modelURL, metadataURL);
+  maxPredictions = animalModel.getTotalClasses();
+
+  const flip = true;
+  webcam = new tmImage.Webcam(200, 200, flip);
+  await webcam.setup();
+  await webcam.play();
+  window.requestAnimationFrame(loopAnimal);
+
+  document.getElementById("webcam-container").appendChild(webcam.canvas);
+  labelContainer = document.getElementById("label-container");
+  labelContainer.innerHTML = ''; // Clear previous labels
+  for (let i = 0; i < maxPredictions; i++) {
+    labelContainer.appendChild(document.createElement("div"));
+  }
+  
+  startBtn.style.display = 'none';
+}
+
+async function loopAnimal() {
+  webcam.update();
+  await predictAnimal();
+  window.requestAnimationFrame(loopAnimal);
+}
+
+async function predictAnimal() {
+  const prediction = await animalModel.predict(webcam.canvas);
+  for (let i = 0; i < maxPredictions; i++) {
+    const classPrediction =
+      prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(0) + "%";
+    labelContainer.childNodes[i].innerHTML = classPrediction;
+  }
+}
+
