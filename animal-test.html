@@ -15,22 +15,6 @@
   <div class="lotto-container">
     <a href="index.html" style="text-decoration: none; color: var(--text-color); font-size: 0.9em; display: block; margin-bottom: 20px;">← 뒤로 가기</a>
     <h1>동물상 테스트</h1>
-
-    <!-- AnimalTest-Top-Display -->
-    <div class="ad-container">
-      <div>
-        <span class="ad-label">ADVERTISEMENT</span>
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-9457106648027800"
-             data-ad-slot="YOUR_TOP_AD_SLOT"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
-    </div>
     
     <div class="mode-switch">
       <label>
@@ -54,22 +38,6 @@
     </div>
 
     <div id="label-container"></div>
-
-    <!-- AnimalTest-Bottom-Display -->
-    <div class="ad-container">
-      <div>
-        <span class="ad-label">ADVERTISEMENT</span>
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-9457106648027800"
-             data-ad-slot="YOUR_BOTTOM_AD_SLOT"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
-    </div>
   </div>
 
   <style>
@@ -90,6 +58,7 @@
       font-size: 1.2em;
       color: var(--text-color);
       text-align: center;
+      width: 100%;
     }
     #label-container div {
       margin-bottom: 8px;
@@ -105,6 +74,7 @@
   <script type="text/javascript">
     const ANIMAL_URL = "https://teachablemachine.withgoogle.com/models/NESzUcrac/";
     let model, webcam, labelContainer, maxPredictions;
+    let isCameraRunning = false;
 
     async function loadModel() {
       if (!model) {
@@ -115,17 +85,35 @@
       }
     }
 
-    function switchMode(mode) {
+    async function stopWebcam() {
+      if (webcam) {
+        await webcam.stop();
+        const webcamContainer = document.getElementById("webcam-container");
+        if (webcamContainer.contains(webcam.canvas)) {
+          webcamContainer.removeChild(webcam.canvas);
+        }
+        webcam = null;
+      }
+      isCameraRunning = false;
+      const startBtn = document.getElementById('start-btn');
+      startBtn.style.display = 'block';
+      startBtn.disabled = false;
+      startBtn.textContent = "카메라 시작";
+    }
+
+    async function switchMode(mode) {
+      await stopWebcam();
       if (mode === 'camera') {
         document.getElementById('camera-section').style.display = 'flex';
         document.getElementById('file-section').style.display = 'none';
-        if (webcam) webcam.stop();
       } else {
         document.getElementById('camera-section').style.display = 'none';
         document.getElementById('file-section').style.display = 'flex';
-        if (webcam) webcam.stop();
       }
       document.getElementById('label-container').innerHTML = '';
+      const img = document.getElementById('image-preview');
+      img.style.display = 'none';
+      img.src = '#';
     }
 
     async function initAnimalTest() {
@@ -139,6 +127,7 @@
       webcam = new tmImage.Webcam(200, 200, flip);
       await webcam.setup();
       await webcam.play();
+      isCameraRunning = true;
       window.requestAnimationFrame(loop);
 
       document.getElementById("webcam-container").appendChild(webcam.canvas);
@@ -151,7 +140,7 @@
     }
 
     async function loop() {
-      if (webcam && webcam.canvas) {
+      if (isCameraRunning && webcam && webcam.canvas) {
         webcam.update();
         await predict(webcam.canvas);
         window.requestAnimationFrame(loop);
@@ -170,6 +159,13 @@
         
         await loadModel();
         
+        // Ensure results container is ready
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = '';
+        for (let i = 0; i < maxPredictions; i++) {
+          labelContainer.appendChild(document.createElement("div"));
+        }
+        
         // Wait for image to load to predict
         img.onload = async function() {
           await predict(img);
@@ -181,11 +177,14 @@
     async function predict(imageElement) {
       const prediction = await model.predict(imageElement);
       labelContainer = document.getElementById("label-container");
+      
+      // If label container is empty (e.g. after mode switch or first file load), populate it
       if (labelContainer.childNodes.length === 0) {
         for (let i = 0; i < maxPredictions; i++) {
           labelContainer.appendChild(document.createElement("div"));
         }
       }
+
       for (let i = 0; i < maxPredictions; i++) {
         const classPrediction =
           prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(0) + "%";
