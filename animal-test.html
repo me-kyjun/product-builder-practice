@@ -28,6 +28,16 @@
       <h1>인공지능 동물상 테스트</h1>
       <p>수만 장의 사진 데이터로 학습된 AI가 당신의 얼굴을 분석하여 가장 닮은 동물을 찾아드립니다. 로그인 없이 간편하게 테스트해보세요!</p>
     </section>
+
+    <div class="theme-switch-wrapper">
+      <label class="theme-switch" for="checkbox">
+        <input type="checkbox" id="checkbox" />
+        <div class="slider round">
+          <span class="emoji sun">🌙</span>
+          <span class="emoji moon">☀️</span>
+        </div>
+      </label>
+    </div>
     
     <div id="file-section" class="test-section">
       <div class="upload-container" id="upload-area" onclick="document.getElementById('image-upload').click()">
@@ -65,7 +75,7 @@
   </footer>
 
   <style>
-    /* Header & Nav */
+    /* Page specific overrides */
     .site-header {
       background: var(--container-background-color);
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -129,7 +139,7 @@
     .footer-links { margin-top: 15px; display: flex; justify-content: center; gap: 20px; }
     .footer-links a { color: var(--text-color); opacity: 0.6; text-decoration: none; font-size: 0.9em; }
 
-    /* Existing test styles */
+    /* Test styles */
     .test-section {
       min-height: 250px;
       display: flex;
@@ -163,7 +173,7 @@
     const ANIMAL_URL = "https://teachablemachine.withgoogle.com/models/NESzUcrac/";
     let model, labelContainer, maxPredictions;
 
-    // Load model as soon as possible
+    // Load model
     loadModel();
 
     async function loadModel() {
@@ -184,45 +194,32 @@
       if (!file) return;
 
       const reader = new FileReader();
-      
       reader.onload = async function(e) {
         const img = document.getElementById('image-preview');
-        
         if (!model) {
           document.getElementById("label-container").innerHTML = '인공지능 모델을 불러오는 중입니다...';
           await loadModel();
         }
-
-        img.onload = async function() {
-          await predict(img);
-        };
-
+        img.onload = async function() { await predict(img); };
         img.src = e.target.result;
         img.style.display = 'block';
-        
         document.getElementById("label-container").innerHTML = '분석 중...';
       };
-      
       reader.readAsDataURL(file);
     }
 
     async function predict(imageElement) {
       if (!model) return;
-      
       const prediction = await model.predict(imageElement);
       prediction.sort((a, b) => b.probability - a.probability);
-      
       labelContainer = document.getElementById("label-container");
       labelContainer.innerHTML = '';
-
       for (let i = 0; i < maxPredictions; i++) {
         const div = document.createElement("div");
         const className = document.createElement("span");
         className.textContent = prediction[i].className;
-        
         const probability = document.createElement("span");
         probability.textContent = (prediction[i].probability * 100).toFixed(0) + "%";
-        
         div.appendChild(className);
         div.appendChild(probability);
         labelContainer.appendChild(div);
@@ -242,9 +239,22 @@
     }));
     uploadArea.addEventListener('drop', e => handleFileUpload({ target: { files: e.dataTransfer.files } }));
 
-    if (localStorage.getItem('theme') === 'dark') {
+    // Theme logic
+    const themeToggle = document.getElementById('checkbox');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
       document.body.classList.add('dark-mode');
+      themeToggle.checked = true;
     }
+    themeToggle.addEventListener('change', () => {
+      if (themeToggle.checked) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+      }
+    });
   </script>
 </body>
 </html>
