@@ -132,6 +132,10 @@ button:hover {
   cursor: pointer;
   position: absolute;
   transition: 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5px;
 }
 
 .slider:before {
@@ -143,10 +147,17 @@ button:hover {
   position: absolute;
   transition: 0.4s;
   width: 26px;
+  z-index: 2;
+}
+
+.emoji {
+  font-size: 16px;
+  z-index: 1;
+  user-select: none;
 }
 
 input:checked + .slider {
-  background-color: #2196f3;
+  background-color: #333;
 }
 
 input:checked + .slider:before {
@@ -159,5 +170,63 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+/* Form Styles */
+.form-divider {
+  margin: 40px 0 30px;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+.dark-mode .form-divider {
+  border-top-color: #555;
+}
+
+.contact-form-container {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.contact-form-container h3 {
+  color: var(--text-color);
+  font-weight: 300;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: var(--container-background-color);
+  color: var(--text-color);
+  transition: border-color 0.3s;
+}
+
+.form-group textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--button-background-color);
+}
+
+.submit-btn {
+  width: 100%;
+  margin: 10px 0 0;
+  font-size: 1em;
+  padding: 12px;
 }
 
