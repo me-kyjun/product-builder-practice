@@ -1,0 +1,10 @@
+{
+  "name": "lotto-ai-project",
+  "version": "1.0.0",
+  "description": "Lotto number generator and AI animal face test",
+  "scripts": {
+    "build": "echo 'No build step needed for static assets'"
+  },
+  "author": "",
+  "license": "ISC"
+}
