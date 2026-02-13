@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://me-kyjun.github.io/product-builder-practice/sitemap.xml
